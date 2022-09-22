@@ -1,0 +1,6 @@
+tensorflow>=2.1.0
+scikit-learn
+h5py
+requests
+jieba
+padlepadle-tiny

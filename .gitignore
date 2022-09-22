@@ -1,0 +1,15 @@
+.vscode/
+__pycache__
+
+corpora/*
+!corpora/README.md
+!corpora/crawler_db.json
+
+corpus/*
+!corpus/README.md
+!corpus/a_yue.txt
+
+log/*
+!log/config.json
+!log/vocab.txt
+!log/weights.hdf5
