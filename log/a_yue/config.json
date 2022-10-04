@@ -1,0 +1,14 @@
+{
+  "name": "a_yue",
+  "rnn_layers": 2,
+  "rnn_size": 128,
+  "rnn_bidirectional": false,
+  "max_length": 40,
+  "dim_embeddings": 100,
+  "dropout": 0.0,
+  "max_vocab": 10000,
+  "min_freq": 10,
+  "epochs": 100,
+  "batch_size": 128,
+  "learning_rate": 0.004
+}

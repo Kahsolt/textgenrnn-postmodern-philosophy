@@ -8,6 +8,7 @@ from re import compile as Regex
 from typing import List
 from argparse import ArgumentParser
 
+import docx
 import jieba
 import jieba.posseg as pseg
 jieba.initialize()
@@ -16,13 +17,15 @@ except: print('>> [warn] so far paddlepaddle-tiny only supports up to python3.7'
 
 from util import CORPUS_PATH, CORPORA_PATH, load_user_vocab, user_vocab_fp
 
-BLANK_REGEX = Regex('\s+')
+REGEX_BLANK = Regex('\s+')
+REGEX_BRACKETS = Regex('(\(.*\))')
 
 
 def _process_file(fp:str, filter:str='') -> List[str]:
   _, ext = os.path.splitext(fp)
   if   ext == '.txt':  return _process_txt(fp, filter)
   elif ext == '.json': return _process_json(fp, filter)
+  elif ext == '.docx': return _process_docx(fp, filter)
   else: raise ValueError(f'unsupported file type {ext}')
 
 def _process_txt(fp:str, filter:str=''):
@@ -43,10 +46,24 @@ def _process_json(fp:str, filter:str=''):
   return [_clean_text(x['title'] + x['content']) for x in articles 
           if filter in x['title'] or filter in x['author'] or filter in x['organization'] or filter in x['content']]
 
+def _process_docx(fp:str, filter:str=''):
+  doc = docx.Document(fp)
+  
+  sents = [ ]
+  for p in doc.paragraphs:
+    p = p.text.strip()
+    p = p.replace('.', '，')        # 扫描错误
+    p = REGEX_BRACKETS.sub('', p)   # 忽略注释
+    if not p: continue
+
+    sents.append(_clean_text(p))
+
+  return sents
+
 def _clean_text(text:str) -> str:
   # remove blank chars
   text = text.replace('\u200b', '')
-  text = BLANK_REGEX.sub(' ', text)
+  text = REGEX_BLANK.sub(' ', text)
   text = text.strip()
 
   # tokenize

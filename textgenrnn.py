@@ -61,7 +61,7 @@ class textgenrnn:
         except Exception as e:
             print_exc()
         
-    def load(self):
+    def load(self, ckpt_fn='weights.hdf5'):
         try:
             self.config = self.default_config.copy()
             self.config.update(load_json(os.path.join(self.workspace_dp, 'config.json')))
@@ -73,7 +73,7 @@ class textgenrnn:
             self.optimizer = Adam(learning_rate=self.config['learning_rate'])
             self.model = textgenrnn_model(num_classes=len(self.vocab) + 1, config=self.config, 
                                           optimizer=self.optimizer,
-                                          weights_path=os.path.join(self.workspace_dp, 'weights.hdf5'))
+                                          weights_path=os.path.join(self.workspace_dp, ckpt_fn))
         except Exception as e:
             print_exc()
     
@@ -85,7 +85,7 @@ class textgenrnn:
             if config: self.config.update(config)
 
             words = [word for sent in texts for word in sent.split(' ')]
-            cnt_word = [(cnt, word) for cnt, word in Counter(words).items() if cnt > self.config['min_freq']]
+            cnt_word = [(cnt, word) for word, cnt in Counter(words).items() if cnt > self.config['min_freq']]
             cnt_word.sort(reverse=True)
             vocab = [w for c, w in cnt_word[:self.config['max_vocab']]]         # should it be unique
             self.vocab = sorted(vocab)
