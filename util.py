@@ -3,6 +3,7 @@
 # Create Time: 2022/09/18 
 
 import os
+import sys
 import json
 from re import compile as Regex
 from dataclasses import dataclass
@@ -100,3 +101,17 @@ def cleanify_url(url: str, filter_keys:List[str]) -> str:
   api, params = parse_url(url)
   filtered_params = dict(filter(lambda kv: kv[0] in filter_keys, params.items()))
   return make_url(api, filtered_params)
+
+
+def get_current_lr(learning_rate, epochs, epoch, start_decay=10):
+  return learning_rate if epoch < start_decay else (learning_rate * (1 - ((epoch - start_decay) / epochs)))
+
+
+if __name__ == '__main__':
+  try:
+    lr     = float(sys.argv[0])
+    epochs = float(sys.argv[1])
+    epoch  = float(sys.argv[2])
+    print(get_current_lr(lr, epochs, epoch))
+  except:
+    print('utils.py <init_lr> <total_epochs> <current_epoch>')

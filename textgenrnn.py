@@ -186,6 +186,7 @@ class textgenrnn:
 
         is_eos = False
         tokens = [meta_token]
+        if isinstance(temperature, (int, float)): temperature = [ temperature ]
 
         while not is_eos and len(tokens) < max_gen_length:
             encoded_text = tokens_to_index(tokens[-maxlen:], word_idx_to, maxlen)[None, :]  # [B=1, T=40]
@@ -241,10 +242,10 @@ class GenerateAfterEpoch(Callback):
         self.max_gen_length = max_gen_length
 
     def on_epoch_end(self, epoch, logs=None):
-        for temperature in [0.2, 0.5, 1.0]:
-            print('#'*20 + '\nTemperature: {}\n'.format(temperature) + '#'*20)
-            for _ in range(3):
-                print(self.textgenrnn.generate(temperature=temperature))
+        temperature = [0.2, 0.5, 1.0]
+        print('#'*20 + '\nTemperature: {}\n'.format(temperature) + '#'*20)
+        for _ in range(3):
+            print(self.textgenrnn.generate(temperature=temperature))
 
 
 class SaveModelWeights(Callback):
